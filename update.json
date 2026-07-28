@@ -1,0 +1,5 @@
+{
+  "version": "0.1.0",
+  "notes": "Erste Windows-Version: mehrere bOden-GeoDIN-MDBs prüfen, Punkte auswählen und mit Duplikatregeln, Backup und Integritätskontrolle in eine Master-MDB fusionieren.",
+  "url": "https://github.com/ivanthevil/geodin-fusion-releases/releases/download/v0.1.0/GeoDIN_Fusion_0.1.0_Windows.exe"
+}

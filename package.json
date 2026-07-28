@@ -1,0 +1,38 @@
+{
+  "name": "boden-geodin-fusion",
+  "version": "0.1.0",
+  "description": "Sichere Zusammenführung von bOden-GeoDIN-MDB-Datenbanken",
+  "main": "electron-main.js",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win portable"
+  },
+  "build": {
+    "appId": "de.boden.geodin-fusion",
+    "productName": "GeoDIN Fusion",
+    "asar": false,
+    "files": [
+      "electron-main.js",
+      "preload.js",
+      "index.html",
+      "app.js",
+      "styles.css",
+      "fusion-engine.ps1",
+      "geodin-fusion-inspect.ps1",
+      "boden-icon.png"
+    ],
+    "win": {
+      "icon": "boden-icon.ico",
+      "signAndEditExecutable": false,
+      "target": [{"target": "portable", "arch": ["x64"]}]
+    },
+    "portable": {
+      "artifactName": "GeoDIN_Fusion_${version}_Windows.exe"
+    }
+  },
+  "devDependencies": {
+    "electron": "^30.5.1",
+    "electron-builder": "^24.13.3"
+  }
+}
