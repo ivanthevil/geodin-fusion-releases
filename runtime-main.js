@@ -6,7 +6,7 @@ const fsp = fs.promises;
 const os = require("os");
 const path = require("path");
 
-const UPDATE_URL = "https://raw.githubusercontent.com/ivanthevil/geodin-fusion-releases/main/update.json";
+const UPDATE_URL = "https://github.com/ivanthevil/geodin-fusion-releases/releases/latest/download/update.json";
 const RUNTIME_FILES = [
   "runtime-main.js","preload.js","index.html","app.js","styles.css",
   "fusion-engine.ps1","geodin-fusion-inspect.ps1","boden-icon.png","boden-icon.ico"

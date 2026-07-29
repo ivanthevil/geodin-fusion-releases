@@ -6,7 +6,7 @@
     {
       "path": "runtime-main.js",
       "url": "https://github.com/ivanthevil/geodin-fusion-releases/releases/download/v0.2.1/runtime-main.js",
-      "sha256": "28f7345a6cb8373f869101507f95a41548b3887405ae5a35368d9320204c1f98"
+      "sha256": "1de89f6729bf67722a242e91be054a0d934f13a9e9f6a5e31d1561082929ce42"
     },
     {
       "path": "preload.js",
