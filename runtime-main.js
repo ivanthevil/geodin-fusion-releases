@@ -9,7 +9,7 @@ const path = require("path");
 const UPDATE_URL = "https://github.com/ivanthevil/geodin-fusion-releases/releases/latest/download/update.json";
 const RUNTIME_FILES = [
   "runtime-main.js","preload.js","index.html","app.js","styles.css",
-  "fusion-engine.ps1","geodin-fusion-inspect.ps1","boden-icon.png","boden-icon.ico"
+  "fusion-engine.ps1","geodin-fusion-inspect.ps1","geodin-point-detail.ps1","boden-icon.png","boden-icon.ico"
 ];
 
 function versionParts(version) {
@@ -86,6 +86,14 @@ function start({ app, bundledRoot, runtimeRoot, runtimeVersion }) {
     return out.canceled?"":out.filePaths[0];
   });
   ipcMain.handle("inspect-db",(_,dbPath)=>runPowerShell("geodin-fusion-inspect.ps1",["-DatabasePath",dbPath]));
+  ipcMain.handle("point-detail",(_,payload)=>{
+    if(!payload||!payload.path)throw new Error("Punktdetails konnten nicht angefordert werden.");
+    return runPowerShell("geodin-point-detail.ps1",[
+      "-DatabasePath",String(payload.path),
+      "-ProjectId",String(payload.projectId),
+      "-LocationId",String(Number.parseInt(payload.locationId,10))
+    ]);
+  });
   ipcMain.handle("merge-databases",async(_,payload)=>{
     const requestPath=path.join(os.tmpdir(),`geodin-fusion-${Date.now()}-${process.pid}.json`);
     fs.writeFileSync(requestPath,JSON.stringify(payload),"utf8");

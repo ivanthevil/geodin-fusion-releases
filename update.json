@@ -1,51 +1,56 @@
 {
-  "version": "0.2.1",
-  "notes": "Stabilitätsupdate für Büro-Datenbanken: Access-Binärfelder werden typgetreu übertragen, große Fusionen laufen in kontrollierten ODBC-Batches und Fehler nennen künftig die konkrete Tabelle und den betroffenen Punkt.",
-  "url": "https://github.com/ivanthevil/geodin-fusion-releases/releases/download/v0.2.1/GeoDIN_Fusion_0.2.1_Windows.exe",
+  "version": "0.3.0",
+  "notes": "Neue Punktprüfung für erfahrene GeoDIN-Anwender: Dubletten zeigen Quelle und Master im direkten Vergleich, RKS-Schichten, Rammwerte und GWM-Ausbau lassen sich aufklappen, und Punktbezeichnungen können vor der Fusion manuell oder per kollisionsfreiem Vorschlag angepasst werden. Die Ähnlichkeitsbewertung ist als heuristische Arbeitshilfe gekennzeichnet. Zusätzlich werden interne GeoDIN-Inventar-IDs beim Umbenennen sicher auf die neue LOCID umgesetzt.",
+  "url": "https://github.com/ivanthevil/geodin-fusion-releases/releases/download/v0.3.0/GeoDIN_Fusion_0.3.0_Windows.exe",
   "files": [
     {
       "path": "runtime-main.js",
-      "url": "https://github.com/ivanthevil/geodin-fusion-releases/releases/download/v0.2.1/runtime-main.js",
-      "sha256": "1de89f6729bf67722a242e91be054a0d934f13a9e9f6a5e31d1561082929ce42"
+      "url": "https://github.com/ivanthevil/geodin-fusion-releases/releases/download/v0.3.0/runtime-main.js",
+      "sha256": "cb6e93b93125ec3bb905796d8647404ac2b619b4d44397011c9edd8c0bb0b26b"
     },
     {
       "path": "preload.js",
-      "url": "https://github.com/ivanthevil/geodin-fusion-releases/releases/download/v0.2.1/preload.js",
-      "sha256": "4c20c260d88d7449297e014ec94a7cd9191047d0cd0bdf2ef1ed1078f8e95dc7"
+      "url": "https://github.com/ivanthevil/geodin-fusion-releases/releases/download/v0.3.0/preload.js",
+      "sha256": "6edbee1258af6f8feb42501b694de636feb97abdf6b8170000c848eccea3441c"
     },
     {
       "path": "index.html",
-      "url": "https://github.com/ivanthevil/geodin-fusion-releases/releases/download/v0.2.1/index.html",
+      "url": "https://github.com/ivanthevil/geodin-fusion-releases/releases/download/v0.3.0/index.html",
       "sha256": "a4b4cee49774d9e56c127598b5a07a4d0ebd1ff30c9ea0b422f250a2560dfa6b"
     },
     {
       "path": "app.js",
-      "url": "https://github.com/ivanthevil/geodin-fusion-releases/releases/download/v0.2.1/app.js",
-      "sha256": "ce1ea942fb9ee621d7563306e202ec961270d3ab16a1e82a92f1b5ed7aa914d7"
+      "url": "https://github.com/ivanthevil/geodin-fusion-releases/releases/download/v0.3.0/app.js",
+      "sha256": "f31136590e3d87713cefd59e7e3255546d8e10241703c9d51ad007922d1ec8ee"
     },
     {
       "path": "styles.css",
-      "url": "https://github.com/ivanthevil/geodin-fusion-releases/releases/download/v0.2.1/styles.css",
-      "sha256": "310d4a16cfe8b3a6e24463301820f965092ae9fb0fdde29a09f80a20060199ce"
+      "url": "https://github.com/ivanthevil/geodin-fusion-releases/releases/download/v0.3.0/styles.css",
+      "sha256": "4d7df95069223cd060f7091112b0208d6e1cc02deaf13970d738b812e94d7cf3"
     },
     {
       "path": "fusion-engine.ps1",
-      "url": "https://github.com/ivanthevil/geodin-fusion-releases/releases/download/v0.2.1/fusion-engine.ps1",
-      "sha256": "90917daa62bd480d08a9ff74bb08ed6e5903c7598624a0a37d5c3075e9dc3eac"
+      "url": "https://github.com/ivanthevil/geodin-fusion-releases/releases/download/v0.3.0/fusion-engine.ps1",
+      "sha256": "8cc9f37065018035e69fa052843fc34444f5a15b968223db3e3afc85d4e971be"
     },
     {
       "path": "geodin-fusion-inspect.ps1",
-      "url": "https://github.com/ivanthevil/geodin-fusion-releases/releases/download/v0.2.1/geodin-fusion-inspect.ps1",
+      "url": "https://github.com/ivanthevil/geodin-fusion-releases/releases/download/v0.3.0/geodin-fusion-inspect.ps1",
       "sha256": "94184af6cb39a1474e89b7094e9a2ef2d35311026b67618285753d5b9b7ff08f"
     },
     {
+      "path": "geodin-point-detail.ps1",
+      "url": "https://github.com/ivanthevil/geodin-fusion-releases/releases/download/v0.3.0/geodin-point-detail.ps1",
+      "sha256": "e6f15e8940ed621d268cf572bdc8ff59f9ccd1d0773b4bd017bd3481c52566ed"
+    },
+    {
       "path": "boden-icon.png",
-      "url": "https://github.com/ivanthevil/geodin-fusion-releases/releases/download/v0.2.1/boden-icon.png",
+      "url": "https://github.com/ivanthevil/geodin-fusion-releases/releases/download/v0.3.0/boden-icon.png",
       "sha256": "503ddaa2272315a2071d8a9f3ba6b16c879cc500eca7fbe7ec8e4542b8320f64"
     },
     {
       "path": "boden-icon.ico",
-      "url": "https://github.com/ivanthevil/geodin-fusion-releases/releases/download/v0.2.1/boden-icon.ico",
+      "url": "https://github.com/ivanthevil/geodin-fusion-releases/releases/download/v0.3.0/boden-icon.ico",
       "sha256": "c8ea7e78b8f17350d32bac4161b93a812e801c14e876216295bed268df9ea84e"
     }
   ]
