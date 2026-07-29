@@ -140,7 +140,7 @@ function layerTable(title,layers){
 function rammTable(rows){
   const values=asArray(rows);
   return `<details class="profile-block"><summary>RAMMPROFIL <b>${values.length}</b></summary>
-    ${values.length?`<div class="ramm-grid">${values.map(row=>`<span>${number(row.depth).toFixed(2)} m</span><b>${number(row.blows)}</b>`).join("")}</div>`:'<p class="profile-empty">Keine Schlagzahlen gespeichert.</p>'}
+    ${values.length?`<div class="ramm-grid">${values.map(row=>`<span>${number(row.depth).toFixed(2)} m</span><b>${esc(row.display??row.blows)}</b>`).join("")}</div>`:'<p class="profile-empty">Keine Schlagzahlen gespeichert.</p>'}
   </details>`;
 }
 function gwmTable(gwm){

@@ -41,6 +41,27 @@ function Convert-Value($Value) {
   return $Value
 }
 
+function Convert-GeoDinNumber($Value) {
+  if ($null -eq $Value -or $Value -eq [DBNull]::Value) { return [double]::NaN }
+  if ($Value -isnot [string]) {
+    try { return [Convert]::ToDouble($Value,[Globalization.CultureInfo]::InvariantCulture) } catch {}
+  }
+  $text = ([string]$Value).Trim()
+  $match = [regex]::Match($text,"[-+]?(?:\d+(?:[.,]\d*)?|[.,]\d+)")
+  if (-not $match.Success) { return [double]::NaN }
+  $number = 0.0
+  if ([double]::TryParse($match.Value.Replace(",","."),[Globalization.NumberStyles]::Float,[Globalization.CultureInfo]::InvariantCulture,[ref]$number)) {
+    return $number
+  }
+  return [double]::NaN
+}
+
+function Ramm-DisplayValue($Value, [double]$Number) {
+  $text = if ($null -eq $Value -or $Value -eq [DBNull]::Value) { "" } else { ([string]$Value).Trim() }
+  if ($text) { return $text }
+  return $Number.ToString("0.##",[Globalization.CultureInfo]::InvariantCulture)
+}
+
 function Invoke-Rows([string]$Sql) {
   $cmd = $conn.CreateCommand()
   try {
@@ -88,10 +109,12 @@ function Read-Ramm-Blob {
           foreach ($line in ($reader.ReadToEnd() -split "\r?\n")) {
             $parts = $line.Trim() -split "[;`t ]+"
             if ($parts.Count -lt 2) { continue }
-            $depth = 0.0; $valueNumber = 0.0
-            $depthOk = [double]::TryParse($parts[0].Replace(",","."),[Globalization.NumberStyles]::Float,[Globalization.CultureInfo]::InvariantCulture,[ref]$depth)
-            $valueOk = [double]::TryParse($parts[1].Replace(",","."),[Globalization.NumberStyles]::Float,[Globalization.CultureInfo]::InvariantCulture,[ref]$valueNumber)
-            if ($depthOk -and $valueOk) { $rows += [pscustomobject]@{ depth=$depth; blows=$valueNumber } }
+            $depth = Convert-GeoDinNumber $parts[0]
+            $valueNumber = Convert-GeoDinNumber $parts[1]
+            if (-not [double]::IsNaN($depth) -and -not [double]::IsNaN($valueNumber)) {
+              $rawValue = ($parts[1..($parts.Count-1)] -join " ").Trim()
+              $rows += [pscustomobject]@{ depth=$depth; blows=$valueNumber; display=(Ramm-DisplayValue $rawValue $valueNumber) }
+            }
           }
           return @($rows)
         } finally { $reader.Dispose() }
@@ -121,7 +144,8 @@ try {
   $layers = @()
   $from = 0.0
   foreach ($row in $rawLayers) {
-    $to = [double]$row.DEPTH
+    $to = Convert-GeoDinNumber $row.DEPTH
+    if ([double]::IsNaN($to)) { $to = $from }
     $parts = @($row.PETRO,$row.GENESE,$row.FARBE,$row.ZUSATZ,$row.ERGBEM,$row.BESCHBG,$row.BESCHBV,$row.GRUPPE,$row.BEMERK) |
       ForEach-Object { ([string]$_).Trim() } | Where-Object { $_ }
     $layers += [pscustomobject]@{
@@ -136,7 +160,14 @@ try {
 
   $ramm = @()
   foreach ($row in @(Point-Rows "GEODIN_LOC_SONDDATA")) {
-    $ramm += [pscustomobject]@{ depth=[double]$row.DEPTH; blows=[double]$row.SNDVALUE }
+    $rammDepth = Convert-GeoDinNumber $row.DEPTH
+    $rammValue = Convert-GeoDinNumber $row.SNDVALUE
+    if ([double]::IsNaN($rammDepth) -or [double]::IsNaN($rammValue)) { continue }
+    $ramm += [pscustomobject]@{
+      depth = $rammDepth
+      blows = $rammValue
+      display = Ramm-DisplayValue $row.SNDVALUE $rammValue
+    }
   }
   if (-not $ramm.Count) { $ramm = @(Read-Ramm-Blob) }
 

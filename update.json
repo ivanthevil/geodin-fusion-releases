@@ -1,56 +1,56 @@
 {
-  "version": "0.3.1",
-  "notes": "Verbesserte Lesbarkeit für GeoDIN Fusion: Die mittlere Punktetabelle verwendet größere Schrift und höhere Zeilen. Punktname, Projektnummer und Beschreibung sind platzsparend in einer Spalte zusammengeführt. Tabelle, Dublettenvergleich, Ansprache und Umbenennung bleiben vollständig innerhalb der mittleren Ansicht und benötigen kein horizontales Verschieben.",
-  "url": "https://github.com/ivanthevil/geodin-fusion-releases/releases/download/v0.3.1/GeoDIN_Fusion_0.3.1_Windows.exe",
+  "version": "0.3.2",
+  "notes": "Fehlerbehebung für GeoDIN-Rammprofile: Sonderwerte mit Zusatztext wie >100 ET verursachen beim Öffnen der Punktdetails keinen Konvertierungsfehler mehr. Fusion erhält den Originaltext für die Anzeige und verwendet den enthaltenen Zahlenwert weiterhin für den fachlichen Vergleich. Normale Tabellenwerte und komprimierte GeoDIN-Rammprofile bleiben kompatibel.",
+  "url": "https://github.com/ivanthevil/geodin-fusion-releases/releases/download/v0.3.2/GeoDIN_Fusion_0.3.2_Windows.exe",
   "files": [
     {
       "path": "runtime-main.js",
-      "url": "https://github.com/ivanthevil/geodin-fusion-releases/releases/download/v0.3.1/runtime-main.js",
+      "url": "https://github.com/ivanthevil/geodin-fusion-releases/releases/download/v0.3.2/runtime-main.js",
       "sha256": "cb6e93b93125ec3bb905796d8647404ac2b619b4d44397011c9edd8c0bb0b26b"
     },
     {
       "path": "preload.js",
-      "url": "https://github.com/ivanthevil/geodin-fusion-releases/releases/download/v0.3.1/preload.js",
+      "url": "https://github.com/ivanthevil/geodin-fusion-releases/releases/download/v0.3.2/preload.js",
       "sha256": "6edbee1258af6f8feb42501b694de636feb97abdf6b8170000c848eccea3441c"
     },
     {
       "path": "index.html",
-      "url": "https://github.com/ivanthevil/geodin-fusion-releases/releases/download/v0.3.1/index.html",
+      "url": "https://github.com/ivanthevil/geodin-fusion-releases/releases/download/v0.3.2/index.html",
       "sha256": "c2361a12db9f7b9083778117fc2f23677d4a75cc1af0351f7d4cb8db370aa6b5"
     },
     {
       "path": "app.js",
-      "url": "https://github.com/ivanthevil/geodin-fusion-releases/releases/download/v0.3.1/app.js",
-      "sha256": "f59a1ab58544bfdc701a78433a16fe29d0490ec1f125e33471ad1b986d91e679"
+      "url": "https://github.com/ivanthevil/geodin-fusion-releases/releases/download/v0.3.2/app.js",
+      "sha256": "4074c7eca4b78207fc0739fa6e470abecd98ce9800ba460e925dd017e66a3a2a"
     },
     {
       "path": "styles.css",
-      "url": "https://github.com/ivanthevil/geodin-fusion-releases/releases/download/v0.3.1/styles.css",
+      "url": "https://github.com/ivanthevil/geodin-fusion-releases/releases/download/v0.3.2/styles.css",
       "sha256": "1c205377866000c02aea732e2276d1c12095beba6804019956484c62ba7ac635"
     },
     {
       "path": "fusion-engine.ps1",
-      "url": "https://github.com/ivanthevil/geodin-fusion-releases/releases/download/v0.3.1/fusion-engine.ps1",
+      "url": "https://github.com/ivanthevil/geodin-fusion-releases/releases/download/v0.3.2/fusion-engine.ps1",
       "sha256": "8cc9f37065018035e69fa052843fc34444f5a15b968223db3e3afc85d4e971be"
     },
     {
       "path": "geodin-fusion-inspect.ps1",
-      "url": "https://github.com/ivanthevil/geodin-fusion-releases/releases/download/v0.3.1/geodin-fusion-inspect.ps1",
+      "url": "https://github.com/ivanthevil/geodin-fusion-releases/releases/download/v0.3.2/geodin-fusion-inspect.ps1",
       "sha256": "94184af6cb39a1474e89b7094e9a2ef2d35311026b67618285753d5b9b7ff08f"
     },
     {
       "path": "geodin-point-detail.ps1",
-      "url": "https://github.com/ivanthevil/geodin-fusion-releases/releases/download/v0.3.1/geodin-point-detail.ps1",
-      "sha256": "e6f15e8940ed621d268cf572bdc8ff59f9ccd1d0773b4bd017bd3481c52566ed"
+      "url": "https://github.com/ivanthevil/geodin-fusion-releases/releases/download/v0.3.2/geodin-point-detail.ps1",
+      "sha256": "25c6d8a3808d2f83d2d76f39b67fb7811e10f17a142ec39d3e821811a8392a83"
     },
     {
       "path": "boden-icon.png",
-      "url": "https://github.com/ivanthevil/geodin-fusion-releases/releases/download/v0.3.1/boden-icon.png",
+      "url": "https://github.com/ivanthevil/geodin-fusion-releases/releases/download/v0.3.2/boden-icon.png",
       "sha256": "503ddaa2272315a2071d8a9f3ba6b16c879cc500eca7fbe7ec8e4542b8320f64"
     },
     {
       "path": "boden-icon.ico",
-      "url": "https://github.com/ivanthevil/geodin-fusion-releases/releases/download/v0.3.1/boden-icon.ico",
+      "url": "https://github.com/ivanthevil/geodin-fusion-releases/releases/download/v0.3.2/boden-icon.ico",
       "sha256": "c8ea7e78b8f17350d32bac4161b93a812e801c14e876216295bed268df9ea84e"
     }
   ]
