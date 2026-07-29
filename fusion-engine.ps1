@@ -19,13 +19,19 @@ function Exists($c,$n){$s=$c.GetSchema("Tables");foreach($r in $s.Rows){if([stri
 function Scalar($c,$sql){$q=$c.CreateCommand();try{$q.CommandText=$sql;$q.ExecuteScalar()}finally{$q.Dispose()}}
 function Rows($c,$sql){$a=New-Object Data.Odbc.OdbcDataAdapter($sql,$c);$d=New-Object Data.DataTable;[void]$a.Fill($d);$a.Dispose();return (,$d)}
 function Q($s){"'"+([string]$s).Replace("'","''")+"'"}
+function ColumnNames($c,$table){
+ $schema=$c.GetSchema("Columns")
+ @($schema.Rows|Where-Object{[string]$_.TABLE_NAME-eq$table}|Sort-Object{[int]$_.ORDINAL_POSITION}|ForEach-Object{[string]$_.COLUMN_NAME})
+}
 function DeletePoint($c,$prj,$loc){foreach($t in $tables){if(Exists $c $t){$q=$c.CreateCommand();try{$q.CommandText="DELETE FROM [$t] WHERE [PRJ_ID]=$(Q $prj) AND [LOCID]=$loc";[void]$q.ExecuteNonQuery()}finally{$q.Dispose()}}}}
 function InsertTable($src,$dst,$table,$prj,$loc,$newPrj,$newLoc,$newName,$projectGuid){
  if(!(Exists $src $table)-or!(Exists $dst $table)){return}
  $dt=Rows $src "SELECT * FROM [$table] WHERE [PRJ_ID]=$(Q $prj) AND [LOCID]=$loc"
+ $dstCols=@(ColumnNames $dst $table)
  foreach($row in $dt.Rows){
   $cols=@();$vals=@()
-   foreach($col in $dt.Columns){$name=[string]$col.ColumnName;$v=$row[$name];if($name -eq "PRJ_ID"){$v=$newPrj};if($name -eq "LOCID"){$v=$newLoc};if($name -eq "ProjectGUID"){$v=$projectGuid};if($name -eq "GEODINGUID"){$v=[guid]::NewGuid().ToString()};if(($name -in @("SHORTNAME","LONGNAME")) -and $newName){$v=$newName};$cols+="[$name]";$vals+=$v}
+   foreach($col in $dt.Columns){$name=[string]$col.ColumnName;if($name -notin $dstCols){continue};$v=$row[$name];if($name -eq "PRJ_ID"){$v=$newPrj};if($name -eq "LOCID"){$v=$newLoc};if($name -eq "ProjectGUID"){$v=$projectGuid};if($name -eq "GEODINGUID"){$v=[guid]::NewGuid().ToString()};if(($name -in @("SHORTNAME","LONGNAME")) -and $newName){$v=$newName};$cols+="[$name]";$vals+=$v}
+   if(!$vals.Count){continue}
    $marks=(1..$vals.Count|ForEach-Object{"?"})-join","
    $q=$dst.CreateCommand();try{$q.CommandText="INSERT INTO [$table] ("+($cols -join ",")+") VALUES ($marks)";foreach($v in $vals){$p=$q.CreateParameter();$p.Value=if($null -eq $v -or $v -eq [DBNull]::Value){[DBNull]::Value}else{$v};[void]$q.Parameters.Add($p)};[void]$q.ExecuteNonQuery()}finally{$q.Dispose()}
  }
@@ -37,7 +43,7 @@ try{
   if($null-ne$existing-and$existing-ne[DBNull]::Value){if($policy-eq"skip"){continue};if($policy-eq"replace"){DeletePoint $dst $prj ([int]$existing)}else{$base=$name;$n=2;do{$name="$base ($n)";$n++;$hit=Scalar $dst "SELECT COUNT(*) FROM [GEODIN_LOC_LOCREG] WHERE [PRJ_ID]=$(Q $prj) AND [SHORTNAME]=$(Q $name)"}while([int]$hit-gt0)}}
   $max=Scalar $dst "SELECT MAX([LOCID]) FROM [GEODIN_LOC_LOCREG] WHERE [PRJ_ID]=$(Q $prj)";$newLoc=if($null-eq$max-or$max-eq[DBNull]::Value){1}else{[int]$max+1}
   $pg=Scalar $dst "SELECT TOP 1 [GEODINGUID] FROM [LOCPRMGR] WHERE [PRJ_ID]=$(Q $prj)"
-  if($null -eq $pg -or $pg -eq [DBNull]::Value){$pdt=Rows $src "SELECT * FROM [LOCPRMGR] WHERE [PRJ_ID]=$(Q $prj)";if($pdt.Rows.Count){$pg=[guid]::NewGuid().ToString();$row=$pdt.Rows[0];$cols=@();$vals=@();foreach($col in $pdt.Columns){$cn=[string]$col.ColumnName;$v=$row[$cn];if($cn -eq "GEODINGUID"){$v=$pg};$cols+="[$cn]";$vals+=$v};$marks=(1..$vals.Count|ForEach-Object{"?"})-join",";$q=$dst.CreateCommand();try{$q.CommandText="INSERT INTO [LOCPRMGR] ("+($cols -join ",")+") VALUES ($marks)";foreach($v in $vals){$p=$q.CreateParameter();$p.Value=if($null -eq $v -or $v -eq [DBNull]::Value){[DBNull]::Value}else{$v};[void]$q.Parameters.Add($p)};[void]$q.ExecuteNonQuery()}finally{$q.Dispose()}}}
+  if($null -eq $pg -or $pg -eq [DBNull]::Value){$pdt=Rows $src "SELECT * FROM [LOCPRMGR] WHERE [PRJ_ID]=$(Q $prj)";if($pdt.Rows.Count){$pg=[guid]::NewGuid().ToString();$row=$pdt.Rows[0];$dstProjectCols=@(ColumnNames $dst "LOCPRMGR");$cols=@();$vals=@();foreach($col in $pdt.Columns){$cn=[string]$col.ColumnName;if($cn -notin $dstProjectCols){continue};$v=$row[$cn];if($cn -eq "GEODINGUID"){$v=$pg};$cols+="[$cn]";$vals+=$v};$marks=(1..$vals.Count|ForEach-Object{"?"})-join",";$q=$dst.CreateCommand();try{$q.CommandText="INSERT INTO [LOCPRMGR] ("+($cols -join ",")+") VALUES ($marks)";foreach($v in $vals){$p=$q.CreateParameter();$p.Value=if($null -eq $v -or $v -eq [DBNull]::Value){[DBNull]::Value}else{$v};[void]$q.Parameters.Add($p)};[void]$q.ExecuteNonQuery()}finally{$q.Dispose()}}}
   foreach($t in $tables){InsertTable $src $dst $t $prj $loc $prj $newLoc $name $pg};$count++
  }finally{if($src){$src.Close();$src.Dispose()}}}
  $dst.Close();$dst.Dispose();$dst=$null

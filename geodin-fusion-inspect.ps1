@@ -72,12 +72,10 @@ try {
     $type = [string]$row["TABLE_TYPE"]
     if ($type -ne "TABLE") { continue }
     if ($name.StartsWith("MSys")) { continue }
-    $count = $null
-    try {
-      $countRows = Invoke-Rows "SELECT COUNT(*) AS C FROM [$name]"
-      $count = [int]$countRows[0].C
-    } catch {}
-    $tables += [pscustomobject]@{ name = $name; rows = $count }
+    # Do not COUNT every table here. Large GeoDIN databases may contain
+    # sequence/BLOB tables that crash the legacy Access ODBC driver when a
+    # full count is requested. Table presence is sufficient for preflight.
+    $tables += [pscustomobject]@{ name = $name; rows = $null }
   }
 
   $projects = @()
@@ -86,33 +84,34 @@ try {
   }
 
   $locations = @()
-  if ((Table-Exists "GEODIN_LOC_LOCREG") -and (Table-Exists "GEODIN_LOC_SSGKRZT1")) {
-    $locations = Invoke-Rows @"
-SELECT
-  L.[PRJ_ID],
-  L.[LOCID],
-  L.[LOCTYPE],
-  L.[SHORTNAME],
-  L.[LONGNAME],
-  L.[ZCOORDB],
-  L.[ZCOORDE],
-  S.[BRGORT],
-  S.[AUFTRAG],
-  S.[PROJEKT],
-  S.[BEARBEITER],
-  S.[BEARB_DAT],
-  S.[BRGTYP],
-  IIF((SELECT COUNT(*) FROM [GEODIN_LOC_SSGSVGEO] G WHERE G.[PRJ_ID]=L.[PRJ_ID] AND G.[LOCID]=L.[LOCID])>0,True,False) AS RKS,
-  IIF((SELECT COUNT(*) FROM [GEODIN_LOC_SONDREG] D WHERE D.[PRJ_ID]=L.[PRJ_ID] AND D.[LOCID]=L.[LOCID])>0,True,False) AS RAMME,
-  IIF((SELECT COUNT(*) FROM [GEODIN_LOC_ASBSTAMM] W WHERE W.[PRJ_ID]=L.[PRJ_ID] AND W.[LOCID]=L.[LOCID])>0,True,False) AS GWM
-FROM [GEODIN_LOC_LOCREG] L
-LEFT JOIN [GEODIN_LOC_SSGKRZT1] S
-  ON L.[PRJ_ID] = S.[PRJ_ID] AND L.[LOCID] = S.[LOCID]
-ORDER BY L.[PRJ_ID], L.[LOCID]
-"@
-  } elseif (Table-Exists "GEODIN_LOC_LOCREG") {
+  if (Table-Exists "GEODIN_LOC_LOCREG") {
     $locations = Invoke-Rows "SELECT [PRJ_ID], [LOCID], [LOCTYPE], [SHORTNAME], [LONGNAME], [ZCOORDB], [ZCOORDE] FROM [GEODIN_LOC_LOCREG] ORDER BY [PRJ_ID], [LOCID]"
   }
+
+  $methodTables = [ordered]@{
+    RKS = "GEODIN_LOC_SSGSVGEO"
+    RAMME = "GEODIN_LOC_SONDREG"
+    GWM = "GEODIN_LOC_ASBSTAMM"
+  }
+  $methodKeys = @{}
+  foreach ($entry in $methodTables.GetEnumerator()) {
+    $set = New-Object 'System.Collections.Generic.HashSet[string]'
+    if (Table-Exists $entry.Value) {
+      try {
+        foreach ($row in (Invoke-Rows "SELECT DISTINCT [PRJ_ID], [LOCID] FROM [$($entry.Value)]")) {
+          [void]$set.Add("$($row.PRJ_ID)::$($row.LOCID)")
+        }
+      } catch {}
+    }
+    $methodKeys[$entry.Key] = $set
+  }
+  $locations = @($locations | ForEach-Object {
+    $key = "$($_.PRJ_ID)::$($_.LOCID)"
+    $_ | Add-Member -NotePropertyName RKS -NotePropertyValue $methodKeys.RKS.Contains($key) -Force
+    $_ | Add-Member -NotePropertyName RAMME -NotePropertyValue $methodKeys.RAMME.Contains($key) -Force
+    $_ | Add-Member -NotePropertyName GWM -NotePropertyValue $methodKeys.GWM.Contains($key) -Force
+    $_
+  })
 
   $out = [ordered]@{
     databasePath = (Resolve-Path -LiteralPath $DatabasePath).Path

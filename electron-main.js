@@ -14,7 +14,16 @@ function runPowerShell(script, args = []) {
       maxBuffer: 100 * 1024 * 1024
     }, (error, stdout, stderr) => {
       const text = String(stdout || "").trim();
-      if (error) return reject(new Error(String(stderr || text || error.message).trim()));
+      if (error) {
+        const raw = String(stderr || text || error.message).trim();
+        if (/AccessViolationException|geschützten Speicher/i.test(raw)) {
+          return reject(new Error("Die Access-Datenbank konnte vom Windows-Treiber nicht sicher gelesen werden. Bitte GeoDIN schließen und die MDB erneut auswählen. Bleibt der Fehler bestehen, die Datenbank zuerst in GeoDIN komprimieren/reparieren."));
+        }
+        const concise = raw.split(/\r?\n/).map(line => line.trim()).filter(line =>
+          line && !/^\s*(bei|at)\s+/i.test(line) && !/System\.Management\.Automation|InterpretedFrame|CallSite|CategoryInfo|FullyQualifiedErrorId/i.test(line)
+        ).slice(0, 5).join("\n");
+        return reject(new Error((concise || "GeoDIN-Datenbank konnte nicht verarbeitet werden.").slice(0, 900)));
+      }
       const start = text.indexOf("{");
       const end = text.lastIndexOf("}");
       if (start < 0 || end < start) return reject(new Error("GeoDIN-Ausgabe konnte nicht gelesen werden."));

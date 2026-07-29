@@ -1,5 +1,5 @@
 {
-  "version": "0.1.0",
-  "notes": "Erste Windows-Version: mehrere bOden-GeoDIN-MDBs prüfen, Punkte auswählen und mit Duplikatregeln, Backup und Integritätskontrolle in eine Master-MDB fusionieren.",
-  "url": "https://github.com/ivanthevil/geodin-fusion-releases/releases/download/v0.1.0/GeoDIN_Fusion_0.1.0_Windows.exe"
+  "version": "0.1.1",
+  "notes": "Große GeoDIN-Masterdatenbanken werden jetzt schnell und speicherschonend geprüft. Der Import berücksichtigt unterschiedliche Tabellenversionen; Fehlermeldungen bleiben kurz und verständlich.",
+  "url": "https://github.com/ivanthevil/geodin-fusion-releases/releases/download/v0.1.1/GeoDIN_Fusion_0.1.1_Windows.exe"
 }
