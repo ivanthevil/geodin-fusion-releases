@@ -1,51 +1,51 @@
 {
-  "version": "0.2.0",
-  "notes": "Superdesign Variante 1 als professionelles Office Command Center, unabhängig scrollbare große Punktetabelle, interne bOden-Dialoge und neuer inkrementeller Updater. Große Fusionen laufen in kontrollierten ODBC-Batches, damit der Access-Treiber keine Client- oder Tabellenlimits mehr erreicht.",
-  "url": "https://github.com/ivanthevil/geodin-fusion-releases/releases/download/v0.2.0/GeoDIN_Fusion_0.2.0_Windows.exe",
+  "version": "0.2.1",
+  "notes": "Stabilitätsupdate für Büro-Datenbanken: Access-Binärfelder werden typgetreu übertragen, große Fusionen laufen in kontrollierten ODBC-Batches und Fehler nennen künftig die konkrete Tabelle und den betroffenen Punkt.",
+  "url": "https://github.com/ivanthevil/geodin-fusion-releases/releases/download/v0.2.1/GeoDIN_Fusion_0.2.1_Windows.exe",
   "files": [
     {
       "path": "runtime-main.js",
-      "url": "https://github.com/ivanthevil/geodin-fusion-releases/releases/download/v0.2.0/runtime-main.js",
+      "url": "https://github.com/ivanthevil/geodin-fusion-releases/releases/download/v0.2.1/runtime-main.js",
       "sha256": "28f7345a6cb8373f869101507f95a41548b3887405ae5a35368d9320204c1f98"
     },
     {
       "path": "preload.js",
-      "url": "https://github.com/ivanthevil/geodin-fusion-releases/releases/download/v0.2.0/preload.js",
+      "url": "https://github.com/ivanthevil/geodin-fusion-releases/releases/download/v0.2.1/preload.js",
       "sha256": "4c20c260d88d7449297e014ec94a7cd9191047d0cd0bdf2ef1ed1078f8e95dc7"
     },
     {
       "path": "index.html",
-      "url": "https://github.com/ivanthevil/geodin-fusion-releases/releases/download/v0.2.0/index.html",
+      "url": "https://github.com/ivanthevil/geodin-fusion-releases/releases/download/v0.2.1/index.html",
       "sha256": "a4b4cee49774d9e56c127598b5a07a4d0ebd1ff30c9ea0b422f250a2560dfa6b"
     },
     {
       "path": "app.js",
-      "url": "https://github.com/ivanthevil/geodin-fusion-releases/releases/download/v0.2.0/app.js",
+      "url": "https://github.com/ivanthevil/geodin-fusion-releases/releases/download/v0.2.1/app.js",
       "sha256": "ce1ea942fb9ee621d7563306e202ec961270d3ab16a1e82a92f1b5ed7aa914d7"
     },
     {
       "path": "styles.css",
-      "url": "https://github.com/ivanthevil/geodin-fusion-releases/releases/download/v0.2.0/styles.css",
+      "url": "https://github.com/ivanthevil/geodin-fusion-releases/releases/download/v0.2.1/styles.css",
       "sha256": "310d4a16cfe8b3a6e24463301820f965092ae9fb0fdde29a09f80a20060199ce"
     },
     {
       "path": "fusion-engine.ps1",
-      "url": "https://github.com/ivanthevil/geodin-fusion-releases/releases/download/v0.2.0/fusion-engine.ps1",
-      "sha256": "261131d0ba1f00910c49dbbd7ebebbf401cd0f809787431895cfe50454dc4f62"
+      "url": "https://github.com/ivanthevil/geodin-fusion-releases/releases/download/v0.2.1/fusion-engine.ps1",
+      "sha256": "90917daa62bd480d08a9ff74bb08ed6e5903c7598624a0a37d5c3075e9dc3eac"
     },
     {
       "path": "geodin-fusion-inspect.ps1",
-      "url": "https://github.com/ivanthevil/geodin-fusion-releases/releases/download/v0.2.0/geodin-fusion-inspect.ps1",
+      "url": "https://github.com/ivanthevil/geodin-fusion-releases/releases/download/v0.2.1/geodin-fusion-inspect.ps1",
       "sha256": "94184af6cb39a1474e89b7094e9a2ef2d35311026b67618285753d5b9b7ff08f"
     },
     {
       "path": "boden-icon.png",
-      "url": "https://github.com/ivanthevil/geodin-fusion-releases/releases/download/v0.2.0/boden-icon.png",
+      "url": "https://github.com/ivanthevil/geodin-fusion-releases/releases/download/v0.2.1/boden-icon.png",
       "sha256": "503ddaa2272315a2071d8a9f3ba6b16c879cc500eca7fbe7ec8e4542b8320f64"
     },
     {
       "path": "boden-icon.ico",
-      "url": "https://github.com/ivanthevil/geodin-fusion-releases/releases/download/v0.2.0/boden-icon.ico",
+      "url": "https://github.com/ivanthevil/geodin-fusion-releases/releases/download/v0.2.1/boden-icon.ico",
       "sha256": "c8ea7e78b8f17350d32bac4161b93a812e801c14e876216295bed268df9ea84e"
     }
   ]

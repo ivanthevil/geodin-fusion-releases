@@ -49,11 +49,12 @@ function InsertTable($src,$dst,$table,$prj,$loc,$newPrj,$newLoc,$newName,$projec
  $dt=Rows $src "SELECT * FROM [$table] WHERE [PRJ_ID]=$(Q $prj) AND [LOCID]=$loc"
  $dstCols=@(ColumnNames $dst $table)
  try{foreach($row in $dt.Rows){
-   $cols=@();$vals=@()
-    foreach($col in $dt.Columns){$name=[string]$col.ColumnName;if($name -notin $dstCols){continue};$v=$row[$name];if($name -eq "PRJ_ID"){$v=$newPrj};if($name -eq "LOCID"){$v=$newLoc};if($name -eq "ProjectGUID"){$v=$projectGuid};if($name -eq "GEODINGUID"){$v=[guid]::NewGuid().ToString()};if(($name -in @("SHORTNAME","LONGNAME")) -and $newName){$v=$newName};$cols+="[$name]";$vals+=$v}
+   $cols=New-Object "Collections.Generic.List[string]";$vals=New-Object "Collections.Generic.List[object]"
+    foreach($col in $dt.Columns){$name=[string]$col.ColumnName;if($name -notin $dstCols){continue};$v=$row[$name];if($name -eq "PRJ_ID"){$v=$newPrj};if($name -eq "LOCID"){$v=$newLoc};if($name -eq "ProjectGUID"){$v=$projectGuid};if($name -eq "GEODINGUID"){$v=[guid]::NewGuid().ToString()};if(($name -in @("SHORTNAME","LONGNAME")) -and $newName){$v=$newName};[void]$cols.Add("[$name]");[void]$vals.Add($v)}
     if(!$vals.Count){continue}
+    if($cols.Count-ne$vals.Count){throw "Interner Parameterfehler in Tabelle $table bei Punkt $prj/$($loc): $($cols.Count) Felder, $($vals.Count) Werte."}
     $marks=(1..$vals.Count|ForEach-Object{"?"})-join","
-    $q=$dst.CreateCommand();try{$q.CommandText="INSERT INTO [$table] ("+($cols -join ",")+") VALUES ($marks)";foreach($v in $vals){$p=$q.CreateParameter();$p.Value=if($null -eq $v -or $v -eq [DBNull]::Value){[DBNull]::Value}else{$v};[void]$q.Parameters.Add($p)};[void]$q.ExecuteNonQuery()}finally{$q.Dispose()}
+    $q=$dst.CreateCommand();try{$q.CommandText="INSERT INTO [$table] ("+($cols -join ",")+") VALUES ($marks)";foreach($v in $vals){$p=$q.CreateParameter();if($null -eq $v -or $v -eq [DBNull]::Value){$p.Value=[DBNull]::Value}else{$p.Value=$v};[void]$q.Parameters.Add($p)};[void]$q.ExecuteNonQuery()}catch{throw "Importfehler in Tabelle $table bei Punkt $prj/$($loc): $($_.Exception.Message)"}finally{$q.Dispose()}
   }}finally{$dt.Dispose()}
 }
 $dst=$null
@@ -69,7 +70,7 @@ try{
   if($null-ne$existing-and$existing-ne[DBNull]::Value){if($policy-eq"skip"){continue};if($policy-eq"replace"){DeletePoint $dst $prj ([int]$existing)}else{$base=$name;$n=2;do{$name="$base ($n)";$n++;$hit=Scalar $dst "SELECT COUNT(*) FROM [GEODIN_LOC_LOCREG] WHERE [PRJ_ID]=$(Q $prj) AND [SHORTNAME]=$(Q $name)"}while([int]$hit-gt0)}}
   $max=Scalar $dst "SELECT MAX([LOCID]) FROM [GEODIN_LOC_LOCREG] WHERE [PRJ_ID]=$(Q $prj)";$newLoc=if($null-eq$max-or$max-eq[DBNull]::Value){1}else{[int]$max+1}
   $pg=Scalar $dst "SELECT TOP 1 [GEODINGUID] FROM [LOCPRMGR] WHERE [PRJ_ID]=$(Q $prj)"
-  if($null -eq $pg -or $pg -eq [DBNull]::Value){$pdt=Rows $src "SELECT * FROM [LOCPRMGR] WHERE [PRJ_ID]=$(Q $prj)";try{if($pdt.Rows.Count){$pg=[guid]::NewGuid().ToString();$row=$pdt.Rows[0];$dstProjectCols=@(ColumnNames $dst "LOCPRMGR");$cols=@();$vals=@();foreach($col in $pdt.Columns){$cn=[string]$col.ColumnName;if($cn -notin $dstProjectCols){continue};$v=$row[$cn];if($cn -eq "GEODINGUID"){$v=$pg};$cols+="[$cn]";$vals+=$v};$marks=(1..$vals.Count|ForEach-Object{"?"})-join",";$q=$dst.CreateCommand();try{$q.CommandText="INSERT INTO [LOCPRMGR] ("+($cols -join ",")+") VALUES ($marks)";foreach($v in $vals){$p=$q.CreateParameter();$p.Value=if($null -eq $v -or $v -eq [DBNull]::Value){[DBNull]::Value}else{$v};[void]$q.Parameters.Add($p)};[void]$q.ExecuteNonQuery()}finally{$q.Dispose()}}}finally{$pdt.Dispose()}}
+  if($null -eq $pg -or $pg -eq [DBNull]::Value){$pdt=Rows $src "SELECT * FROM [LOCPRMGR] WHERE [PRJ_ID]=$(Q $prj)";try{if($pdt.Rows.Count){$pg=[guid]::NewGuid().ToString();$row=$pdt.Rows[0];$dstProjectCols=@(ColumnNames $dst "LOCPRMGR");$cols=New-Object "Collections.Generic.List[string]";$vals=New-Object "Collections.Generic.List[object]";foreach($col in $pdt.Columns){$cn=[string]$col.ColumnName;if($cn -notin $dstProjectCols){continue};$v=$row[$cn];if($cn -eq "GEODINGUID"){$v=$pg};[void]$cols.Add("[$cn]");[void]$vals.Add($v)};if($cols.Count-ne$vals.Count){throw "Interner Parameterfehler im Projekt $prj."};$marks=(1..$vals.Count|ForEach-Object{"?"})-join",";$q=$dst.CreateCommand();try{$q.CommandText="INSERT INTO [LOCPRMGR] ("+($cols -join ",")+") VALUES ($marks)";foreach($v in $vals){$p=$q.CreateParameter();if($null -eq $v -or $v -eq [DBNull]::Value){$p.Value=[DBNull]::Value}else{$p.Value=$v};[void]$q.Parameters.Add($p)};[void]$q.ExecuteNonQuery()}catch{throw "Importfehler im Projekt $($prj): $($_.Exception.Message)"}finally{$q.Dispose()}}}finally{$pdt.Dispose()}}
   foreach($t in $tables){InsertTable $src $dst $t $prj $loc $prj $newLoc $name $pg};$count++
   if(($count%50)-eq0){
    $src.Close();$src.Dispose();$src=$null
