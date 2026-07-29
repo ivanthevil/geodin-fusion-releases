@@ -165,10 +165,10 @@ function pointCard(label,detail,master=false){
 }
 function renderInspector(k,source,point){
   const entry=state.details.get(k);
-  if(!entry)return`<tr class="inspector-row"><td colspan="6"><div class="inspector loading">PUNKTDETAILS WERDEN GELADEN …</div></td></tr>`;
-  if(entry.error)return`<tr class="inspector-row"><td colspan="6"><div class="inspector error-box">${esc(entry.error)}</div></td></tr>`;
+  if(!entry)return`<tr class="inspector-row"><td colspan="5"><div class="inspector loading">PUNKTDETAILS WERDEN GELADEN …</div></td></tr>`;
+  if(entry.error)return`<tr class="inspector-row"><td colspan="5"><div class="inspector error-box">${esc(entry.error)}</div></td></tr>`;
   const comparison=compareDetails(entry.source,entry.target),suggestion=suggestedName(point),override=state.nameOverrides.get(k)||point.SHORTNAME||"",isChanged=norm(override)!==norm(point.SHORTNAME);
-  return `<tr class="inspector-row"><td colspan="6"><section class="inspector">
+  return `<tr class="inspector-row"><td colspan="5"><section class="inspector">
     <div class="inspector-top">
       <div class="compare-pair">${pointCard(`QUELLE · ${fileName(source.path)}`,entry.source)}<i>VS</i>${pointCard(`MASTER · ${fileName(state.target?.path)}`,entry.target,true)}</div>
       <div class="similarity ${comparison.tone}"><span>HEURISTISCHE ÄHNLICHKEIT</span><b>${comparison.score===null?"–":`${comparison.score}%`}</b><strong>${comparison.label}</strong><small>Arbeitshilfe, keine fachliche Freigabe</small></div>
@@ -212,13 +212,12 @@ function renderTable(){
   let duplicateCount=0,rows="",total=0;
   state.sources.forEach(s=>{
     if(s.error)return;const locations=s.info.locations||[];total+=locations.length;
-    rows+=`<tr class="group"><td colspan="6">▣ &nbsp; ${esc(fileName(s.path))} (${locations.length} PUNKTE)</td></tr>`;
+    rows+=`<tr class="group"><td colspan="5">▣ &nbsp; ${esc(fileName(s.path))} (${locations.length} PUNKTE)</td></tr>`;
     locations.forEach(p=>{
       const k=key(s,p),dup=!!targetMatch(p),open=state.expanded===k,displayName=state.nameOverrides.get(k)||p.SHORTNAME;if(dup)duplicateCount++;
       rows+=`<tr class="${dup?"duplicate":""} ${open?"open":""}">
         <td><input data-key="${esc(k)}" type="checkbox" ${state.selected.has(k)?"checked":""}></td>
-        <td class="point-id"><b>${esc(displayName||`PUNKT ${p.LOCID}`)}</b><small>${esc(p.PRJ_ID)}</small></td>
-        <td class="description">${esc(p.LONGNAME||p.SHORTNAME||"–")}</td>
+        <td class="point-cell"><b>${esc(displayName||`PUNKT ${p.LOCID}`)}</b><span>${esc(p.PRJ_ID)}</span><small>${esc(p.LONGNAME||p.SHORTNAME||"–")}</small></td>
         <td>${procedures(p).map(x=>`<span class="badge ${x.toLowerCase()}">${x}</span>`).join(" ")||"–"}</td>
         <td class="${dup?"duplicate-text":"ready"}"><span>${dup?"DUPLIKAT":"BEREIT"}</span><button class="inspect-button" data-inspect="${esc(k)}" type="button">${dup?"VERGLEICHEN":p.RKS?"ANSPRACHE":"DETAILS"}</button></td>
         <td class="depth">${Number(p.ZCOORDE||0).toFixed(2)} m <button class="chevron" data-inspect="${esc(k)}" type="button">${open?"⌃":"⌄"}</button></td>
