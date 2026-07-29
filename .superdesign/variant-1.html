@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GeoDIN Fusion - bOden</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+    
+    :root {
+      --paper: #f0ede7;
+      --surface: #ffffff;
+      --surface-s2: #f7f5f0;
+      --border: #d8d0c4;
+      --border-strong: #a89888;
+      --accent: #b87818;
+      --accent-wash: #fffbf2;
+      --text: #000000;
+      --text-muted: #1f1f1f;
+      --text-faint: #7a7a7a;
+      --save-green: #107c10;
+      --error-red: #b00020;
+      --font-main: 'Bahnschrift SemiCondensed', 'Arial Narrow', 'Segoe UI', sans-serif;
+    }
+
+    body {
+      font-family: var(--font-main);
+      background-color: var(--paper);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+      margin: 0;
+    }
+
+    .uppercase-label {
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-faint);
+    }
+
+    .panel-border {
+      border: 1px solid var(--border);
+    }
+
+    .panel-border-strong {
+      border: 2px solid var(--border-strong);
+    }
+
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 0px;
+    }
+
+    .btn-shadow:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .technical-grid {
+      background-image: radial-gradient(var(--border) 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+
+    .badge {
+      font-size: 10px;
+      font-weight: 800;
+      padding: 1px 4px;
+      border-radius: 2px;
+      border: 1px solid currentColor;
+    }
+  </style>
+</head>
+<body>
+  <div class="flex flex-col h-screen overflow-hidden">
+    <!-- Top Bar -->
+    <header class="h-14 bg-white border-b-2 border-[#d8d0c4] flex items-center justify-between px-6 z-50 shrink-0">
+      <div class="flex items-center gap-4">
+        <img src="./boden-icon.png" alt="bOden" class="w-9 h-9">
+        <div class="flex flex-col -space-y-1">
+          <span class="text-xl font-bold tracking-tight uppercase">bOden</span>
+          <span class="text-[11px] font-bold text-[#b87818] uppercase tracking-widest">GeoDIN Fusion Archive Management</span>
+        </div>
+        <div class="h-8 w-[1px] bg-[#d8d0c4] mx-2"></div>
+        <div class="flex flex-col">
+          <span class="text-[10px] uppercase font-bold text-[#7a7a7a]">Software Version</span>
+          <span class="text-xs font-bold">v2.4.12-OFFICE</span>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-6">
+        <div class="flex items-center gap-2">
+          <div class="w-2 h-2 rounded-full bg-[#107c10] animate-pulse"></div>
+          <span class="text-[11px] font-bold uppercase tracking-tight">System Online / Keine Updates</span>
+        </div>
+        <div class="h-8 w-[1px] bg-[#d8d0c4]"></div>
+        <button id="nav-settings" class="flex items-center gap-2 p-2 hover:bg-[#f0ede7] transition-colors">
+          <iconify-icon icon="lucide:settings" class="text-xl"></iconify-icon>
+          <span class="text-[11px] font-bold uppercase">Einstellungen</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main class="flex-1 flex overflow-hidden p-3 gap-3">
+      
+      <!-- Left: Source Databases (Symmetrical to Target) -->
+      <aside class="w-[340px] flex flex-col gap-3 shrink-0">
+        <div class="bg-white panel-border-strong flex flex-col h-full">
+          <div class="p-3 border-b border-[#d8d0c4] flex items-center justify-between bg-[#f7f5f0]">
+            <h2 class="uppercase-label">1. Quell-Archive</h2>
+            <button id="add-source-btn" class="text-[11px] font-bold text-black border border-black px-2 py-0.5 hover:bg-black hover:text-white transition-all">HINZUFÜGEN</button>
+          </div>
+          
+          <div class="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-3">
+            <!-- File Card -->
+            <div class="panel-border p-3 bg-white relative">
+              <div class="flex items-start justify-between mb-2">
+                <div>
+                  <div class="text-sm font-bold leading-tight">PROJEKT_SÜD_FINAL.MDB</div>
+                  <div class="text-[10px] font-mono text-[#7a7a7a] break-all mt-1 uppercase">C:\USERS\OFFICE\PROJECTS\2023-088_SÜD\...</div>
+                </div>
+                <iconify-icon icon="lucide:database" class="text-[#b87818]"></iconify-icon>
+              </div>
+              <div class="grid grid-cols-2 gap-2 mb-2">
+                <div class="bg-[#f7f5f0] p-1.5">
+                  <div class="text-[9px] uppercase font-bold text-[#7a7a7a]">Punkte</div>
+                  <div class="text-xs font-bold">12 Datensätze</div>
+                </div>
+                <div class="bg-[#f7f5f0] p-1.5">
+                  <div class="text-[9px] uppercase font-bold text-[#7a7a7a]">Status</div>
+                  <div class="text-xs font-bold text-[#107c10]">Verifiziert</div>
+                </div>
+              </div>
+              <div class="flex gap-1.5">
+                <span class="badge text-[#107c10]">RKS</span>
+                <span class="badge text-[#0078d4]">GWM</span>
+              </div>
+            </div>
+
+            <!-- File Card Active Selection -->
+            <div class="panel-border-strong p-3 bg-[#fffbf2] relative">
+              <div class="absolute top-0 right-0 w-6 h-6 bg-[#b87818] flex items-center justify-center text-white">
+                <iconify-icon icon="lucide:check-circle-2"></iconify-icon>
+              </div>
+              <div class="flex items-start justify-between mb-2">
+                <div>
+                  <div class="text-sm font-bold leading-tight">NACHBEFAHRUNG_A4.MDB</div>
+                  <div class="text-[10px] font-mono text-[#7a7a7a] break-all mt-1 uppercase">D:\DATA\ARCHIVE_2024\A4_RECOVERY\...</div>
+                </div>
+              </div>
+              <div class="grid grid-cols-2 gap-2 mb-2">
+                <div class="bg-white p-1.5 border border-[#d8d0c4]">
+                  <div class="text-[9px] uppercase font-bold text-[#7a7a7a]">Punkte</div>
+                  <div class="text-xs font-bold">4 Datensätze</div>
+                </div>
+                <div class="bg-white p-1.5 border border-[#d8d0c4]">
+                  <div class="text-[9px] uppercase font-bold text-[#7a7a7a]">Status</div>
+                  <div class="text-xs font-bold text-[#107c10]">Bereit</div>
+                </div>
+              </div>
+              <div class="flex gap-1.5">
+                <span class="badge text-[#b87818]">RAMME</span>
+              </div>
+            </div>
+
+            <!-- Locked/Error File -->
+            <div class="panel-border p-3 bg-white opacity-80 border-dashed">
+              <div class="flex items-center gap-2 mb-1">
+                <iconify-icon icon="lucide:lock" class="text-[#b00020]"></iconify-icon>
+                <div class="text-sm font-bold text-[#b00020]">ARCHIV_LOCKED.MDB</div>
+              </div>
+              <div class="text-[11px] text-[#b00020]">Datei wird von einem anderen Prozess verwendet (MDB LOCK).</div>
+            </div>
+          </div>
+
+          <div class="p-3 bg-[#f7f5f0] border-t border-[#d8d0c4]">
+            <div class="border-2 border-dashed border-[#d8d0c4] bg-white h-24 flex flex-col items-center justify-center text-center cursor-pointer hover:border-[#b87818] transition-all group">
+              <iconify-icon icon="lucide:plus-square" class="text-2xl text-[#a89888] group-hover:text-[#b87818] mb-1"></iconify-icon>
+              <div class="text-[11px] font-bold uppercase tracking-widest">Dateien hierher ziehen</div>
+              <div class="text-[10px] text-[#7a7a7a]">MDB / GeoDIN Formate</div>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Center: Point Review (Enlarged) -->
+      <section class="flex-1 flex flex-col gap-3 min-w-0">
+        <div class="bg-white panel-border-strong flex flex-col h-full overflow-hidden shadow-sm">
+          <div class="p-3 border-b border-[#d8d0c4] flex items-center justify-between bg-[#f7f5f0]">
+            <div class="flex items-center gap-4">
+              <h2 class="uppercase-label">2. Datenanalyse & Auswahl</h2>
+              <div class="h-4 w-[1px] bg-[#d8d0c4]"></div>
+              <span class="text-[11px] font-bold uppercase">Gesamt: 16 Punkte</span>
+            </div>
+            <div class="flex items-center gap-4">
+              <label class="flex items-center gap-2 text-[11px] font-bold cursor-pointer">
+                <input type="checkbox" checked class="w-4 h-4 accent-[#b87818]"> ALLE AUSWÄHLEN
+              </label>
+            </div>
+          </div>
+
+          <div class="flex-1 overflow-auto custom-scrollbar">
+            <table class="w-full text-left border-collapse min-w-[600px]">
+              <thead class="sticky top-0 bg-[#f7f5f0] border-b border-[#d8d0c4] z-10">
+                <tr class="text-[11px] font-bold text-black uppercase tracking-tight">
+                  <th class="p-3 w-10"></th>
+                  <th class="p-3 w-40">Punkt-ID</th>
+                  <th class="p-3">Bezeichnung / Kurztext</th>
+                  <th class="p-3 w-32">Verfahren</th>
+                  <th class="p-3 w-32">Status</th>
+                  <th class="p-3 text-right w-24">Endteufe</th>
+                </tr>
+              </thead>
+              <tbody class="text-[13px]">
+                <!-- Group Header -->
+                <tr class="bg-[#f0ede7] border-y border-[#d8d0c4]">
+                  <td colspan="6" class="p-2 px-4">
+                    <div class="flex items-center gap-2">
+                      <iconify-icon icon="lucide:database" class="text-xs"></iconify-icon>
+                      <span class="text-[11px] font-bold uppercase tracking-widest">PROJEKT_SÜD_FINAL.MDB (12 PUNKTE)</span>
+                    </div>
+                  </td>
+                </tr>
+                <!-- Rows -->
+                <tr class="bg-white border-b border-[#f0ede7] hover:bg-[#fffbf2] transition-colors">
+                  <td class="p-3 text-center"><input type="checkbox" checked class="accent-[#b87818]"></td>
+                  <td class="p-3 font-bold">B 1/23</td>
+                  <td class="p-3 text-[#7a7a7a]">Neubau MFH Südhang - Kernbohrung Hauptachse</td>
+                  <td class="p-3"><div class="flex gap-1"><span class="badge text-[#107c10]">RKS</span><span class="badge text-[#0078d4]">GWM</span></div></td>
+                  <td class="p-3 font-bold text-[#107c10]">Bereit</td>
+                  <td class="p-3 text-right font-mono">12.50 m</td>
+                </tr>
+                <tr class="bg-[#fff8e6] border-b border-[#f0ede7] hover:bg-[#fff0cc] transition-colors">
+                  <td class="p-3 text-center"><input type="checkbox" checked class="accent-[#b87818]"></td>
+                  <td class="p-3 font-bold">B 2/23</td>
+                  <td class="p-3 text-[#7a7a7a]">Neubau MFH Südhang - Erkundung Zufahrt</td>
+                  <td class="p-3"><div class="flex gap-1"><span class="badge text-[#107c10]">RKS</span></div></td>
+                  <td class="p-3 flex items-center gap-1 font-bold text-[#b87818]">
+                    <iconify-icon icon="lucide:alert-circle"></iconify-icon> Duplikat
+                  </td>
+                  <td class="p-3 text-right font-mono">8.40 m</td>
+                </tr>
+                <!-- Another Group -->
+                <tr class="bg-[#f0ede7] border-y border-[#d8d0c4]">
+                  <td colspan="6" class="p-2 px-4">
+                    <div class="flex items-center gap-2">
+                      <iconify-icon icon="lucide:database" class="text-xs"></iconify-icon>
+                      <span class="text-[11px] font-bold uppercase tracking-widest">NACHBEFAHRUNG_A4.MDB (4 PUNKTE)</span>
+                    </div>
+                  </td>
+                </tr>
+                <tr class="bg-white border-b border-[#f0ede7] hover:bg-[#fffbf2] transition-colors">
+                  <td class="p-3 text-center"><input type="checkbox" checked class="accent-[#b87818]"></td>
+                  <td class="p-3 font-bold">DPH 01</td>
+                  <td class="p-3 text-[#7a7a7a]">A4 Brückensanierung KM 42.5</td>
+                  <td class="p-3"><div class="flex gap-1"><span class="badge text-[#b87818]">RAMME</span></div></td>
+                  <td class="p-3 font-bold text-[#107c10]">Bereit</td>
+                  <td class="p-3 text-right font-mono">4.20 m</td>
+                </tr>
+                <!-- Fill empty space to look dense -->
+                <tr class="bg-white border-b border-[#f0ede7]"><td class="p-3" colspan="6">&nbsp;</td></tr>
+                <tr class="bg-white border-b border-[#f0ede7]"><td class="p-3" colspan="6">&nbsp;</td></tr>
+                <tr class="bg-white border-b border-[#f0ede7]"><td class="p-3" colspan="6">&nbsp;</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right: Target Database (Symmetrical to Source) -->
+      <aside class="w-[340px] flex flex-col gap-3 shrink-0">
+        <div class="bg-white panel-border-strong flex flex-col h-full">
+          <div class="p-3 border-b border-[#d8d0c4] flex items-center justify-between bg-[#f7f5f0]">
+            <h2 class="uppercase-label">3. Ziel-Archiv (Master)</h2>
+            <button id="change-target-btn" class="text-[11px] font-bold text-black border border-black px-2 py-0.5 hover:bg-black hover:text-white transition-all">ÄNDERN</button>
+          </div>
+
+          <div class="p-3 space-y-4 flex-1 overflow-y-auto custom-scrollbar">
+            <!-- Master Selection Panel -->
+            <div class="panel-border p-4 bg-[#fffbf2] border-[#b87818] border-l-[6px]">
+              <div class="flex items-center gap-2 mb-2 text-[#b87818]">
+                <iconify-icon icon="lucide:shield-check" class="text-xl"></iconify-icon>
+                <span class="text-[10px] font-black uppercase tracking-widest">Aktive Master-Datenbank</span>
+              </div>
+              <div class="text-base font-bold mb-1">ZENTRAL_REGISTER_2024.MDB</div>
+              <div class="text-[10px] font-mono text-[#7a7a7a] break-all uppercase border-t border-[#e0d8cc] pt-2 mt-2 leading-tight">
+                C:\GEODIN_DATA\MASTERS\2024\ZENTRAL_REGISTER_2024.MDB
+              </div>
+            </div>
+
+            <!-- Symmetrical Status Blocks -->
+            <div class="space-y-2">
+              <h3 class="text-[11px] font-bold uppercase text-[#7a7a7a] mb-2">Integration Parameter</h3>
+              
+              <div class="bg-white border border-[#d8d0c4] p-3">
+                <div class="flex justify-between items-center mb-1">
+                  <span class="text-xs font-bold">Auto-Backup</span>
+                  <span class="text-[10px] font-bold text-[#107c10] uppercase">AKTIV</span>
+                </div>
+                <div class="text-[10px] text-[#7a7a7a] font-mono uppercase truncate italic">Backup_Target_20241027_0942.bak</div>
+              </div>
+
+              <div class="bg-white border border-[#d8d0c4] p-3">
+                <div class="flex justify-between items-center">
+                  <span class="text-xs font-bold">Integrität</span>
+                  <iconify-icon icon="lucide:check" class="text-[#107c10]"></iconify-icon>
+                </div>
+                <div class="text-[10px] text-[#7a7a7a] uppercase mt-1">Schema-Validation erfolgreich</div>
+              </div>
+            </div>
+
+            <!-- Conflict Management -->
+            <div class="space-y-3">
+              <h3 class="text-[11px] font-bold uppercase text-[#7a7a7a]">Konflikt-Behandlung</h3>
+              <div class="flex flex-col gap-1">
+                <button class="flex items-center justify-between p-2 border border-[#d8d0c4] text-[11px] font-bold hover:bg-[#f7f5f0]">
+                  <span>ÜBERSPRINGEN (SKIP)</span>
+                  <iconify-icon icon="lucide:skip-forward"></iconify-icon>
+                </button>
+                <button class="flex items-center justify-between p-2 border border-[#d8d0c4] text-[11px] font-bold hover:bg-[#f7f5f0]">
+                  <span>UMBENENNEN (RENAME)</span>
+                  <iconify-icon icon="lucide:edit-3"></iconify-icon>
+                </button>
+                <button class="flex items-center justify-between p-2 border-2 border-[#b87818] bg-[#fffbf2] text-[11px] font-black">
+                  <span>ERSETZEN (OVERWRITE)</span>
+                  <iconify-icon icon="lucide:copy" class="text-base"></iconify-icon>
+                </button>
+              </div>
+              <div class="bg-[#fff8e6] p-2 border border-[#e6d5a8] text-[10px] italic">
+                Hinweis: 4 Duplikate werden überschrieben.
+              </div>
+            </div>
+          </div>
+
+          <div class="p-3 bg-white border-t border-[#d8d0c4]">
+             <div class="flex items-center gap-3 p-2 bg-[#f7f5f0]">
+               <iconify-icon icon="lucide:user-check" class="text-xl"></iconify-icon>
+               <div class="flex flex-col">
+                 <span class="text-[10px] uppercase font-bold text-[#7a7a7a]">Autorisierter Editor</span>
+                 <span class="text-xs font-bold uppercase">Dominik Müller (ID: DM-88)</span>
+               </div>
+             </div>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <!-- Bottom Action Console -->
+    <footer class="h-24 bg-white border-t-2 border-[#d8d0c4] px-6 flex items-center justify-between shrink-0">
+      <div class="flex items-center gap-8">
+        <div class="flex flex-col gap-2">
+          <div class="flex items-center gap-3">
+            <span class="text-[11px] font-bold uppercase">Fusions-Fortschritt</span>
+            <div class="h-3 w-64 bg-[#f0ede7] border border-[#d8d0c4]">
+              <div class="h-full bg-[#107c10] w-[65%]"></div>
+            </div>
+            <span class="text-[11px] font-black text-[#107c10]">65% PRÜFUNG ABGESCHLOSSEN</span>
+          </div>
+          <div class="text-xs font-bold">
+            16 Punkte bereit zur Integration in <span class="text-[#b87818]">ZENTRAL_REGISTER_2024.MDB</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-4">
+        <button id="btn-validate" class="px-8 py-3.5 border-2 border-black text-xs font-black hover:bg-[#f0ede7] btn-shadow transition-all uppercase tracking-widest">
+          PRÜFUNG STARTEN
+        </button>
+        <button id="btn-merge" class="px-10 py-3.5 bg-black text-white text-xs font-black flex items-center gap-3 btn-shadow transition-all shadow-xl uppercase tracking-widest">
+          SICHER FUSIONIEREN <iconify-icon icon="lucide:arrow-right-circle" class="text-lg"></iconify-icon>
+        </button>
+      </div>
+    </footer>
+
+    <!-- Terminal Status Strip -->
+    <div class="h-6 bg-black text-white flex items-center px-4 justify-between text-[10px] font-bold uppercase tracking-widest">
+      <div class="flex gap-6">
+        <span class="flex items-center gap-1.5">
+          <div class="w-1.5 h-1.5 rounded-full bg-[#107c10]"></div> System: Bereit für Schreibvorgang
+        </span>
+        <span>CPU: 4% | RAM: 1.2GB</span>
+      </div>
+      <div class="flex gap-6">
+        <span>Letztes Backup: 27.10.2024 - 09:42:12</span>
+        <span class="text-[#b87818]">Lizenz aktiv: bOden Business Pro</span>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

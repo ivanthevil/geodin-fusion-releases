@@ -6,6 +6,8 @@ contextBridge.exposeInMainWorld("fusionApi", {
   inspect: path => ipcRenderer.invoke("inspect-db", path),
   merge: payload => ipcRenderer.invoke("merge-databases", payload),
   checkUpdate: () => ipcRenderer.invoke("check-update"),
-  openExternal: url => ipcRenderer.invoke("open-external", url),
+  downloadUpdate: () => ipcRenderer.invoke("download-update"),
+  restartForUpdate: () => ipcRenderer.invoke("restart-for-update"),
+  onUpdateProgress: callback => ipcRenderer.on("update-progress",(_,payload)=>callback(payload)),
   version: () => ipcRenderer.invoke("app-version")
 });

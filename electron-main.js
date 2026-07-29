@@ -1,72 +1,40 @@
-const { app, BrowserWindow, dialog, ipcMain, shell } = require("electron");
-const { execFile } = require("child_process");
+const { app } = require("electron");
 const fs = require("fs");
-const os = require("os");
 const path = require("path");
 
-const root = __dirname;
-const UPDATE_URL = "https://raw.githubusercontent.com/ivanthevil/geodin-fusion-releases/main/update.json";
+const bundledRoot = __dirname;
 
-function runPowerShell(script, args = []) {
-  return new Promise((resolve, reject) => {
-    execFile("powershell.exe", ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", path.join(root, script), ...args], {
-      windowsHide: true,
-      maxBuffer: 100 * 1024 * 1024
-    }, (error, stdout, stderr) => {
-      const text = String(stdout || "").trim();
-      if (error) {
-        const raw = String(stderr || text || error.message).trim();
-        if (/AccessViolationException|geschützten Speicher/i.test(raw)) {
-          return reject(new Error("Die Access-Datenbank konnte vom Windows-Treiber nicht sicher gelesen werden. Bitte GeoDIN schließen und die MDB erneut auswählen. Bleibt der Fehler bestehen, die Datenbank zuerst in GeoDIN komprimieren/reparieren."));
-        }
-        const concise = raw.split(/\r?\n/).map(line => line.trim()).filter(line =>
-          line && !/^\s*(bei|at)\s+/i.test(line) && !/System\.Management\.Automation|InterpretedFrame|CallSite|CategoryInfo|FullyQualifiedErrorId/i.test(line)
-        ).slice(0, 5).join("\n");
-        return reject(new Error((concise || "GeoDIN-Datenbank konnte nicht verarbeitet werden.").slice(0, 900)));
-      }
-      const start = text.indexOf("{");
-      const end = text.lastIndexOf("}");
-      if (start < 0 || end < start) return reject(new Error("GeoDIN-Ausgabe konnte nicht gelesen werden."));
-      try { resolve(JSON.parse(text.slice(start, end + 1))); }
-      catch { reject(new Error("GeoDIN-Ausgabe ist ungültig.")); }
-    });
-  });
+function parts(version) {
+  return String(version || "0").split(".").map(x => Number.parseInt(x, 10) || 0);
+}
+function newer(left, right) {
+  const a = parts(left), b = parts(right);
+  for (let i = 0; i < Math.max(a.length, b.length); i++) {
+    if ((a[i] || 0) !== (b[i] || 0)) return (a[i] || 0) > (b[i] || 0);
+  }
+  return false;
+}
+function activeRuntime() {
+  try {
+    const statePath = path.join(app.getPath("userData"), "fusion-runtime.json");
+    const state = JSON.parse(fs.readFileSync(statePath, "utf8"));
+    const runtimeMain = path.join(state.root, "runtime-main.js");
+    if (newer(state.version, app.getVersion()) && fs.existsSync(runtimeMain)) {
+      return { root: state.root, version: state.version };
+    }
+  } catch {}
+  return { root: bundledRoot, version: app.getVersion() };
 }
 
-function createWindow() {
-  const win = new BrowserWindow({
-    width: 1440, height: 900, minWidth: 1180, minHeight: 700,
-    backgroundColor: "#f0ede7",
-    icon: path.join(root, "boden-icon.ico"),
-    webPreferences: { preload: path.join(root, "preload.js"), contextIsolation: true, nodeIntegration: false }
-  });
-  win.setMenuBarVisibility(false);
-  win.loadFile("index.html");
-}
-
-ipcMain.handle("choose-sources", async () => {
-  const out = await dialog.showOpenDialog({ title: "Quell-Datenbanken auswählen", properties: ["openFile", "multiSelections"], filters: [{ name: "GeoDIN MDB", extensions: ["mdb"] }] });
-  return out.canceled ? [] : out.filePaths;
+app.whenReady().then(() => {
+  const active = activeRuntime();
+  try {
+    const runtime = require(path.join(active.root, "runtime-main.js"));
+    runtime.start({ app, bundledRoot, runtimeRoot: active.root, runtimeVersion: active.version });
+  } catch (error) {
+    if (active.root === bundledRoot) throw error;
+    try { fs.unlinkSync(path.join(app.getPath("userData"), "fusion-runtime.json")); } catch {}
+    const fallback = require(path.join(bundledRoot, "runtime-main.js"));
+    fallback.start({ app, bundledRoot, runtimeRoot: bundledRoot, runtimeVersion: app.getVersion() });
+  }
 });
-ipcMain.handle("choose-target", async () => {
-  const out = await dialog.showOpenDialog({ title: "Master-Datenbank auswählen", properties: ["openFile"], filters: [{ name: "GeoDIN MDB", extensions: ["mdb"] }] });
-  return out.canceled ? "" : out.filePaths[0];
-});
-ipcMain.handle("inspect-db", (_, dbPath) => runPowerShell("geodin-fusion-inspect.ps1", ["-DatabasePath", dbPath]));
-ipcMain.handle("merge-databases", async (_, payload) => {
-  const requestPath = path.join(os.tmpdir(), `geodin-fusion-${Date.now()}-${process.pid}.json`);
-  fs.writeFileSync(requestPath, JSON.stringify(payload), "utf8");
-  try { return await runPowerShell("fusion-engine.ps1", ["-RequestPath", requestPath]); }
-  finally { try { fs.unlinkSync(requestPath); } catch {} }
-});
-ipcMain.handle("check-update", async () => {
-  const response = await fetch(`${UPDATE_URL}?t=${Date.now()}`, { cache: "no-store" });
-  if (!response.ok) throw new Error(`Update-Prüfung fehlgeschlagen (${response.status}).`);
-  const data = await response.json();
-  return { ...data, currentVersion: app.getVersion(), updateAvailable: data.version !== app.getVersion() };
-});
-ipcMain.handle("open-external", (_, url) => shell.openExternal(url));
-ipcMain.handle("app-version", () => app.getVersion());
-
-app.whenReady().then(createWindow);
-app.on("window-all-closed", () => { if (process.platform !== "darwin") app.quit(); });

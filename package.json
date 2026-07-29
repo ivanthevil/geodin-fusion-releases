@@ -1,6 +1,6 @@
 {
   "name": "boden-geodin-fusion",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Sichere Zusammenführung von bOden-GeoDIN-MDB-Datenbanken",
   "main": "electron-main.js",
   "private": true,
@@ -14,6 +14,7 @@
     "asar": false,
     "files": [
       "electron-main.js",
+      "runtime-main.js",
       "preload.js",
       "index.html",
       "app.js",

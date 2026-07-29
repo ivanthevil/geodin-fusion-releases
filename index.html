@@ -7,40 +7,116 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header>
-    <div class="brand"><img src="boden-icon.png"><div><b>bOden</b><span>GEODIN FUSION</span></div><i id="version">v0.1.0</i></div>
-    <div class="header-actions"><button id="update">UPDATE PRÜFEN</button><button id="settings">EINSTELLUNGEN</button></div>
-  </header>
-  <main>
-    <aside class="panel sources">
-      <div class="panel-title"><span>1. QUELL-DATENBANKEN</span><button id="addSources">HINZUFÜGEN</button></div>
-      <div id="sourceList" class="scroll empty">MDB-Dateien hinzufügen oder hier ablegen.</div>
-      <button id="dropZone" class="drop">＋ MDB-DATEIEN AUSWÄHLEN</button>
-    </aside>
-    <section class="panel review">
-      <div class="panel-title"><span>2. DATENANALYSE & AUSWAHL</span><label><input id="all" type="checkbox" checked> ALLE</label></div>
-      <div class="table-wrap"><table><thead><tr><th></th><th>PROJEKT / PUNKT</th><th>VERFAHREN</th><th>QUELLE</th><th>STATUS</th><th>ENDTIEFE</th></tr></thead><tbody id="points"></tbody></table></div>
-    </section>
-    <aside class="panel target">
-      <div class="panel-title"><span>3. MASTER-DATENBANK</span><button id="chooseTarget">ÄNDERN</button></div>
-      <div id="targetCard" class="target-card empty">Noch keine Master-MDB ausgewählt.</div>
-      <div class="section-label">KONFLIKT-BEHANDLUNG</div>
-      <div class="policies">
-        <button data-policy="skip">ÜBERSPRINGEN</button>
-        <button data-policy="rename">UMBENENNEN</button>
-        <button data-policy="replace" class="active">ERSETZEN</button>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="identity">
+        <img src="boden-icon.png" alt="bOden">
+        <div class="product"><b>bOden</b><span>GEODIN FUSION ARCHIVE MANAGEMENT</span></div>
+        <div class="divider"></div>
+        <div class="version-block"><span>SOFTWARE VERSION</span><b id="version">–</b></div>
       </div>
-      <div class="section-label">SICHERHEIT</div>
-      <div class="facts"><div>AUTOMATISCHES BACKUP <b>AKTIV</b></div><div>SCHEMA-PRÜFUNG <b id="schema">AUSSTEHEND</b></div><div>DUPLIKATE <b id="duplicates">0</b></div></div>
-      <div id="notice" class="notice">Die Master-MDB muss während der Fusion in GeoDIN geschlossen sein.</div>
-    </aside>
-  </main>
-  <footer>
-    <div><b id="summary">Keine Datenbanken geladen.</b><span id="status">SYSTEM BEREIT</span></div>
-    <button id="validate">PRÜFUNG STARTEN</button>
-    <button id="merge" class="primary" disabled>SICHER FUSIONIEREN →</button>
-  </footer>
-  <dialog id="settingsDialog"><form method="dialog"><h2>EINSTELLUNGEN</h2><p>GeoDIN Fusion prüft Updates über das eigene GitHub-Repository.</p><button id="settingsUpdate" type="button">JETZT AUF UPDATES PRÜFEN</button><button>SCHLIESSEN</button></form></dialog>
+      <div class="system-actions">
+        <div class="online"><i></i><span id="updateState">SYSTEM ONLINE / UPDATESTATUS WIRD GEPRÜFT</span></div>
+        <div class="divider"></div>
+        <button id="update" class="nav-button" type="button"><span class="icon">↻</span> UPDATE</button>
+        <button id="settings" class="nav-button" type="button"><span class="icon">⚙</span> EINSTELLUNGEN</button>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <aside class="panel sources-panel">
+        <div class="panel-head">
+          <h2>1. QUELL-ARCHIVE</h2>
+          <button id="addSources" class="mini-button" type="button">HINZUFÜGEN</button>
+        </div>
+        <div id="sourceList" class="source-list custom-scrollbar empty-state">
+          <div class="empty-content"><span class="large-icon">▣</span><b>NOCH KEINE QUELLEN</b><small>GeoDIN-MDB-Dateien hinzufügen.</small></div>
+        </div>
+        <div class="drop-shell">
+          <button id="dropZone" class="drop-zone" type="button">
+            <span class="large-icon">⊞</span><b>DATEIEN HIERHER ZIEHEN</b><small>MDB / GeoDIN Formate</small>
+          </button>
+        </div>
+      </aside>
+
+      <section class="panel review-panel">
+        <div class="panel-head review-head">
+          <div><h2>2. DATENANALYSE & AUSWAHL</h2><span class="head-count" id="totalCount">GESAMT: 0 PUNKTE</span></div>
+          <label class="select-all"><input id="all" type="checkbox" checked> ALLE AUSWÄHLEN</label>
+        </div>
+        <div class="table-wrap custom-scrollbar" id="tableViewport">
+          <table>
+            <thead><tr><th class="check-col"></th><th class="id-col">PUNKT-ID</th><th>BEZEICHNUNG / KURZTEXT</th><th class="method-col">VERFAHREN</th><th class="status-col">STATUS</th><th class="depth-col">ENDTIEFE</th></tr></thead>
+            <tbody id="points"></tbody>
+          </table>
+          <div id="tableEmpty" class="table-empty"><span class="large-icon">⌕</span><b>KEINE PUNKTE GELADEN</b><small>Füge links mindestens eine Quell-Datenbank hinzu.</small></div>
+        </div>
+      </section>
+
+      <aside class="panel target-panel">
+        <div class="panel-head">
+          <h2>3. ZIEL-ARCHIV (MASTER)</h2>
+          <button id="chooseTarget" class="mini-button" type="button">ÄNDERN</button>
+        </div>
+        <div class="target-scroll custom-scrollbar">
+          <div id="targetCard" class="master-card empty-state">
+            <span class="eyebrow">AKTIVE MASTER-DATENBANK</span>
+            <b>NOCH NICHT AUSGEWÄHLT</b>
+            <small>Wähle eine bestehende GeoDIN-MDB.</small>
+          </div>
+
+          <section class="rail-section">
+            <h3>INTEGRATION PARAMETER</h3>
+            <div class="metric-card"><div><b>AUTO-BACKUP</b><span class="success">AKTIV</span></div><small id="backupState">Wird vor jedem Schreibvorgang erzeugt</small></div>
+            <div class="metric-card"><div><b>INTEGRITÄT</b><span id="schema" class="pending">AUSSTEHEND</span></div><small>Schema-Validation der Master-MDB</small></div>
+          </section>
+
+          <section class="rail-section">
+            <h3>KONFLIKT-BEHANDLUNG</h3>
+            <div class="policies">
+              <button data-policy="skip" type="button"><span>ÜBERSPRINGEN (SKIP)</span><i>≫</i></button>
+              <button data-policy="rename" type="button"><span>UMBENENNEN (RENAME)</span><i>✎</i></button>
+              <button data-policy="replace" class="active" type="button"><span>ERSETZEN (OVERWRITE)</span><i>▣</i></button>
+            </div>
+            <div id="duplicateNotice" class="rail-notice">Keine Duplikate erkannt.</div>
+          </section>
+
+          <section class="rail-section safety">
+            <h3>SICHERHEIT</h3>
+            <p>Die Master-MDB muss während der Fusion in GeoDIN geschlossen sein.</p>
+          </section>
+        </div>
+      </aside>
+    </main>
+
+    <footer class="action-console">
+      <div class="progress-block">
+        <div class="progress-line"><b>FUSIONS-FORTSCHRITT</b><div class="progress-track"><i id="progressBar"></i></div><span id="progressLabel">SYSTEM BEREIT</span></div>
+        <strong id="summary">Keine Datenbanken geladen.</strong>
+      </div>
+      <div class="footer-actions">
+        <button id="validate" class="secondary-action" type="button">PRÜFUNG STARTEN</button>
+        <button id="merge" class="primary-action" type="button" disabled>SICHER FUSIONIEREN <span>→</span></button>
+      </div>
+    </footer>
+
+    <div class="terminal-strip">
+      <span><i></i><b id="status">SYSTEM: BEREIT</b></span>
+      <span id="activePath">KEINE MASTER-DATENBANK GEÖFFNET</span>
+      <span>BACKUP-SCHUTZ AKTIV</span>
+    </div>
+  </div>
+
+  <div id="modalLayer" class="modal-layer" hidden>
+    <section class="app-modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-head"><div><span id="modalEyebrow">GEODIN FUSION</span><h2 id="modalTitle">MELDUNG</h2></div><button id="modalClose" class="icon-button" type="button">×</button></div>
+      <div id="modalBody" class="modal-body"></div>
+      <div id="modalProgress" class="modal-progress" hidden><div><i id="modalProgressBar"></i></div><span id="modalProgressText">0 %</span></div>
+      <div id="modalActions" class="modal-actions"></div>
+    </section>
+  </div>
+
+  <div id="toastStack" class="toast-stack" aria-live="polite"></div>
   <script src="app.js"></script>
 </body>
 </html>
